@@ -1,9 +1,12 @@
 package fish.eyebrow.squirrel
 
 import Sql._
+
 import org.scalatest.flatspec.AnyFlatSpec
 
 class SqlInterpolatorTest extends AnyFlatSpec {
+  implicit val ctx: Ctx = Ctx()(null, null)
+
   "sql strings" should "interpolate ToStringFrags" in {
     val short: Short = 255
     val int: Int = 888
@@ -22,10 +25,10 @@ class SqlInterpolatorTest extends AnyFlatSpec {
            |  AND float = $float
            |  AND boolean = $boolean
            |  AND char = $char
-           |  AND byte = $byte""".stripMargin
+           |  AND byte = $byte""".raw.stripMargin
 
     assert(sqlStr ==
-      sql"""SELECT * FROM SomeTable
+      """SELECT * FROM SomeTable
            |WHERE short = 255
            |  AND int = 888
            |  AND long = 9999
@@ -38,8 +41,8 @@ class SqlInterpolatorTest extends AnyFlatSpec {
 
   "sql strings" should "interpolate StringFrag" in {
     val string = "TheWorstTable"
-    val sqlStr = sql"""DROP TABLE $string"""
+    val sqlStr = sql"""DROP TABLE $string""".raw
 
-    assert(sqlStr == sql"DROP TABLE TheWorstTable")
+    assert(sqlStr == "DROP TABLE TheWorstTable")
   }
 }

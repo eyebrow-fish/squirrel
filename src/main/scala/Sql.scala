@@ -2,11 +2,11 @@ package fish.eyebrow.squirrel
 
 object Sql {
   implicit class SqlInterpolator(val sc: StringContext) extends AnyVal {
-    def sql(args: Frag*): String = {
-      sc.parts
+    def sql(args: Frag*)(implicit ctx: Ctx): SqlQuery = {
+      SqlQuery.fromSqlString(sc.parts
         .zipLeft(args)
         .flatMap(t => t._1 :: t._2.map(_.str) ?? "" :: Nil)
-        .mkString
+        .mkString)
     }
   }
 
