@@ -5,7 +5,7 @@ import cats.effect.IO
 import java.sql.PreparedStatement
 import scala.concurrent.Future
 
-class SqlQuery(val sql: String, val parameters: Seq[Param[_]])(implicit ctx: Ctx) {
+class SqlQuery(val sql: String, val parameters: Seq[FragParam[_]])(implicit ctx: Ctx) {
   import ctx._
 
   def query[T <: Product : ProductMeta]: IO[List[T]] = {
@@ -34,9 +34,11 @@ class SqlQuery(val sql: String, val parameters: Seq[Param[_]])(implicit ctx: Ctx
 
   private def preparedStatement: PreparedStatement = {
     val statement = connection.prepareStatement(sql)
-    parameters.zipWithIndex.foreach { case (param, i) =>
-      param.addStatementParam(statement, i)
+    def doSetT[T](p: FragParam[T], i: Int): Unit = {
+      p.setT(statement)(i)
     }
+
+    parameters.zipWithIndex.foreach(t => doSetT(t._1, t._2))
     statement
   }
 }

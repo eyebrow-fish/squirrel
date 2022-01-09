@@ -2,7 +2,7 @@ package fish.eyebrow.squirrel
 
 import Sql._
 
-import Param._
+import FragParam._
 import org.scalatest.flatspec.AnyFlatSpec
 
 class SqlInterpolatorTest extends AnyFlatSpec {
@@ -22,15 +22,15 @@ class SqlInterpolatorTest extends AnyFlatSpec {
 
     assert(query.sql == """SELECT * FROM SomeTable WHERE string = ? AND short = ? AND int = ? AND long = ? AND double = ? AND float = ? AND boolean = ? AND byte = ? AND char = ?""")
     assert(query.parameters == Seq(
-      StringParam(string),
-      ShortParam(short),
-      IntParam(int),
-      LongParam(long),
-      DoubleParam(double),
-      FloatParam(float),
-      BooleanParam(boolean),
-      ByteParam(byte),
-      StringParam(char.toString),
+      StringFrag(string),
+      ShortFrag(short),
+      IntFrag(int),
+      LongFrag(long),
+      DoubleFrag(double),
+      FloatFrag(float),
+      BooleanFrag(boolean),
+      ByteFrag(byte),
+      CharFrag(char),
     ))
   }
 
@@ -39,6 +39,6 @@ class SqlInterpolatorTest extends AnyFlatSpec {
     val query = sql"""DROP TABLE $string"""
 
     assert(query.sql == "DROP TABLE ?")
-    assert(query.parameters == Seq(StringParam("TheWorstTable")))
+    assert(query.parameters == Seq(StringFrag("TheWorstTable")))
   }
 }

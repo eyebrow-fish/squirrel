@@ -3,7 +3,7 @@ package fish.eyebrow.squirrel
 import scala.language.implicitConversions
 
 trait FragConversions {
-  import Sql.Frag._
+  import FragParam._
 
   implicit def stringFrag(str: String): StringFrag = StringFrag(str)
   implicit def shortFrag(x: Short): ShortFrag = ShortFrag(x)
