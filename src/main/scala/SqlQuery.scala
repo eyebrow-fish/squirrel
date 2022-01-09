@@ -12,13 +12,22 @@ class SqlQuery(val raw: String)(implicit ctx: Ctx) {
       Future(connection.prepareStatement(raw).executeQuery()).map { resultSet =>
         val results = List.newBuilder[T]
         while (resultSet.next()) {
-          val size = resultSet.getMetaData.getColumnCount
-          implicitly[ProductMeta[T]].ofObjects {
-            (0 to size).map(resultSet.getObject).toList
+          val metaData = resultSet.getMetaData
+          val size = metaData.getColumnCount
+          results += implicitly[ProductMeta[T]].ofObjects {
+            (1 to size).map { i =>
+              metaData.getColumnName(i) -> resultSet.getObject(i)
+            }.toMap
           }
         }
         results.result()
       }
+    })
+  }
+
+  def update: IO[Boolean] = {
+    IO.fromFuture(IO {
+      Future(connection.prepareStatement(raw).execute())
     })
   }
 }

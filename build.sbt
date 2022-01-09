@@ -13,5 +13,6 @@ lazy val root = (project in file("."))
       "org.typelevel" %% "cats-effect" % "3.3.0",
 
       "org.scalatest" %% "scalatest" % "3.2.9" % Test,
+      "org.xerial" % "sqlite-jdbc" % "3.36.0.3" % Test,
     ),
   )

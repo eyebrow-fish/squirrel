@@ -18,25 +18,25 @@ class SqlInterpolatorTest extends AnyFlatSpec {
     val byte: Byte = 1
     val sqlStr =
       sql"""SELECT * FROM SomeTable
-           |WHERE short = $short
-           |  AND int = $int
-           |  AND long = $long
-           |  AND double = $double
-           |  AND float = $float
-           |  AND boolean = $boolean
-           |  AND char = $char
-           |  AND byte = $byte""".raw.stripMargin
+            WHERE short = $short
+              AND int = $int
+              AND long = $long
+              AND double = $double
+              AND float = $float
+              AND boolean = $boolean
+              AND char = $char
+              AND byte = $byte""".raw.stripMargin
 
     assert(sqlStr ==
       """SELECT * FROM SomeTable
-           |WHERE short = 255
-           |  AND int = 888
-           |  AND long = 9999
-           |  AND double = 123.2
-           |  AND float = 123.3
-           |  AND boolean = true
-           |  AND char = 'a'
-           |  AND byte = 1""".stripMargin)
+         WHERE short = 255
+           AND int = 888
+           AND long = 9999
+           AND double = 123.2
+           AND float = 123.3
+           AND boolean = true
+           AND char = 'a'
+           AND byte = 1""".stripMargin)
   }
 
   "sql strings" should "interpolate StringFrag" in {
