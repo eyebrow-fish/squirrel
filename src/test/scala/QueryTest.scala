@@ -51,6 +51,19 @@ class QueryTest extends AnyFlatSpec with BeforeAndAfterEach {
     assert(result.last == Person(3, "Larissa", "Ruecker"))
   }
 
+  "query with params" should "allow where clauses" in {
+    sql"""insert into PersonTable(firstName, lastName) values
+         ("Alexander", "Johnston"),
+         ("Oliver", "Ruecker Johnston"),
+         ("Larissa", "Ruecker")
+         """.update.unsafeRunSync()
+
+    val result = sql"select * from PersonTable where id > 1".query[Person].unsafeRunSync()
+
+    assert(result.head == Person(2, "Oliver", "Ruecker Johnston"))
+    assert(result.last == Person(3, "Larissa", "Ruecker"))
+  }
+
   override def beforeEach(): Unit = {
     sql"""create table if not exists PersonTable
          (
