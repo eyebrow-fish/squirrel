@@ -1,6 +1,7 @@
 package fish.eyebrow.squirrel
 
 import java.sql.PreparedStatement
+import java.time.Instant
 
 trait FragParam[T] {
   def x: T
@@ -50,5 +51,28 @@ object FragParam {
 
   case class CharFrag(x: Char) extends DelegateFragParam[Char, String] {
     override def delegate: FragParam[String] = StringFrag(x.toString)
+  }
+
+  class NullFrag[T] extends FragParam[T] {
+    def x: T = null.asInstanceOf[T]
+
+    // Null cannot simply be set, the SQL type must be known to the PreparedStatement.
+    override def setT(stmt: PreparedStatement): Int => Unit = { i =>
+      import java.sql.Types
+      val nullType = x match {
+        case _: String => Types.VARCHAR
+        case _: Short => Types.SMALLINT
+        case _: Int => Types.INTEGER
+        case _: Long => Types.BIGINT
+        case _: Float => Types.FLOAT
+        case _: Double => Types.DOUBLE
+        case _: Boolean => Types.BOOLEAN
+        case _: Char => Types.CHAR
+        case _: Instant => Types.TIMESTAMP
+        case _ => Types.NULL
+      }
+
+      stmt.setNull(i, nullType)
+    }
   }
 }

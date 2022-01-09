@@ -34,11 +34,22 @@ class SqlInterpolatorTest extends AnyFlatSpec {
     ))
   }
 
-  "sql strings" should "interpolate StringFrag" in {
+  it should "interpolate StringFrag" in {
     val string = "TheWorstTable"
     val query = sql"""DROP TABLE $string"""
 
     assert(query.sql == "DROP TABLE ?")
     assert(query.parameters == Seq(StringFrag("TheWorstTable")))
+  }
+
+  it should "interpolate options" in {
+    val some = Some('a')
+    val none: Option[String] = None
+
+    val query = sql"""SELECT * FROM people WHERE initial = $some OR carMake = $none"""
+
+    assert(query.sql == "SELECT * FROM people WHERE initial = ? OR carMake = ?")
+    assert(query.parameters.head == CharFrag('a'))
+    assert(query.parameters.last.isInstanceOf[NullFrag[String]])
   }
 }
